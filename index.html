@@ -5,42 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>2026 歐洲行</title>
+    <title>2026 Trip</title>
     <style>
         :root {
-            /* Apple Pro Palette */
             --bg-body: #F2F2F7;
             --card-bg: #FFFFFF;
-            --text-primary: #000000;
-            --text-secondary: #6C6C70;
-            --divider: #C6C6C8;
+            --text-primary: #1C1C1E;
+            --text-secondary: #3C3C4399;
+            --divider: #E5E5EA;
             
-            /* Deep & Vivid Colors */
-            --cz-color: #0044CC; /* Vibrant Royal Blue */
-            --pl-color: #D4213D; /* Deep Crimson */
-            --fi-color: #002957; /* Midnight Navy */
+            /* Deep Colors */
+            --cz-color: #0044CC;
+            --pl-color: #D4213D;
+            --fi-color: #002957;
             
             /* Gradients */
-            --grad-cz: linear-gradient(145deg, #003366 0%, #005EB8 100%);
-            --grad-pl: linear-gradient(145deg, #8E0000 0%, #D93025 100%);
-            --grad-fi: linear-gradient(145deg, #001A33 0%, #004080 100%);
+            --grad-cz: linear-gradient(135deg, #003366 0%, #005EB8 100%);
+            --grad-pl: linear-gradient(135deg, #8E0000 0%, #D93025 100%);
+            --grad-fi: linear-gradient(135deg, #001A33 0%, #004080 100%);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
             margin: 0; padding: 0;
-            padding-bottom: 110px; /* Space for tab bar */
+            padding-bottom: 120px; /* Space for tab bar */
             -webkit-font-smoothing: antialiased;
         }
 
-        /* === Navigation Bar === */
+        /* === Top Nav Bar === */
         .nav-bar {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(242, 242, 247, 0.9);
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(242, 242, 247, 0.95);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 0.5px solid rgba(0,0,0,0.15);
             padding: 50px 20px 10px 20px;
@@ -48,12 +47,17 @@
         .nav-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
         .nav-subtitle { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
 
-        /* === Container === */
-        .view-container { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
-        .view-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* === Page Containers (JS Controlled) === */
+        .page-container {
+            display: none; /* Hidden by default */
+            padding: 20px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .page-container.active { display: block; } /* Show when active */
 
-        /* === Weather Widget (Vivid & Clear) === */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === Weather Widget === */
         .weather-card {
             border-radius: 22px; padding: 24px; margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); position: relative; overflow: hidden;
@@ -63,18 +67,17 @@
         .weather-card.pl { background: var(--grad-pl); }
         .weather-card.fi { background: var(--grad-fi); }
 
-        .weather-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .weather-city { font-size: 28px; font-weight: 700; }
-        .weather-eng { font-size: 14px; opacity: 0.8; text-transform: uppercase; font-weight: 600; margin-top: 2px; }
-        .weather-temp { font-size: 64px; font-weight: 200; margin: 10px 0; line-height: 1; }
-        .weather-condition { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .w-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .w-city { font-size: 28px; font-weight: 700; }
+        .w-eng { font-size: 14px; opacity: 0.8; text-transform: uppercase; font-weight: 600; margin-top: 2px; }
+        .w-temp { font-size: 64px; font-weight: 200; margin: 10px 0; line-height: 1; }
+        .w-cond { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         
-        .weather-grid { 
+        .w-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; 
             padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); 
         }
-        .weather-item { font-size: 13px; opacity: 0.9; font-weight: 500; }
-        .weather-val { font-size: 16px; font-weight: 700; display: block; margin-top: 4px; }
+        .w-item { font-size: 13px; opacity: 0.9; font-weight: 500; }
 
         /* Hourly Scroll */
         .hourly-scroll { display: flex; overflow-x: auto; gap: 25px; margin-top: 20px; padding-bottom: 5px; scrollbar-width: none; }
@@ -84,16 +87,15 @@
         .hourly-temp { font-size: 15px; font-weight: 700; }
 
         /* === Section Header === */
-        .section-header {
-            font-size: 22px; font-weight: 800; margin: 35px 0 15px 5px; color: #000;
-        }
+        .section-header { font-size: 22px; font-weight: 800; margin: 35px 0 15px 5px; color: #000; }
 
-        /* === Cards & List === */
+        /* === Cards === */
         .ios-card {
             background: #fff; border-radius: 18px; overflow: hidden; margin-bottom: 25px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
+        /* === Timeline Rows === */
         .timeline-row {
             padding: 20px; display: flex; align-items: flex-start;
             border-bottom: 0.5px solid var(--divider);
@@ -112,14 +114,14 @@
 
         .t-right { flex: 1; padding-left: 10px; }
         .t-title { font-size: 17px; font-weight: 700; color: #000; margin-bottom: 4px; }
-        .t-desc { font-size: 15px; color: #555; line-height: 1.5; }
+        .t-desc { font-size: 15px; color: #666; line-height: 1.5; }
         .t-note { 
             margin-top: 10px; font-size: 13px; color: #856404; background: #FFF9E6; 
             padding: 8px 12px; border-radius: 8px; display: inline-block; font-weight: 600;
         }
 
-        /* === Attraction Details (Long Content) === */
-        details.ios-detail { border-bottom: 0.5px solid var(--divider); }
+        /* === Attraction Details === */
+        details { border-bottom: 0.5px solid var(--divider); }
         summary {
             padding: 20px; font-size: 17px; font-weight: 600; list-style: none;
             display: flex; justify-content: space-between; align-items: center; cursor: pointer;
@@ -133,7 +135,7 @@
         .info-grid {
             display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; 
             background: #fff; border: 1px solid #e5e5ea; padding: 15px; 
-            border-radius: 12px; margin-bottom: 20px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border-radius: 12px; margin-bottom: 20px; font-size: 14px;
         }
         .info-label { font-weight: 700; color: #8E8E93; }
         .info-val { font-weight: 600; color: #000; }
@@ -141,14 +143,13 @@
         .warn-box {
             background: #FFF5F5; border: 1px solid #FFDCDC; color: #D32F2F;
             padding: 14px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; font-weight: 600;
-            display: flex; gap: 10px; align-items: flex-start;
         }
 
         .wiki-text { font-size: 16px; line-height: 1.8; color: #333; text-align: justify; }
         .wiki-text p { margin-bottom: 20px; }
         .wiki-text strong { color: #000; font-weight: 700; font-size: 17px; display: block; margin-bottom: 5px; }
 
-        .btn-group { display: flex; gap: 12px; margin-top: 25px; }
+        .btn-group { display: flex; gap: 12px; margin-top: 30px; }
         .btn {
             flex: 1; padding: 14px; text-align: center; border-radius: 12px; 
             text-decoration: none; font-weight: 600; font-size: 15px; display: flex; 
@@ -157,35 +158,17 @@
         .btn-map { background: #EBF5FF; color: #007AFF; }
         .btn-web { background: #E5E5EA; color: #000; }
 
-        /* === Nightlife Card (Clean) === */
-        .night-card {
-            background: #fff; padding: 20px; border-radius: 18px; margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);
+        /* === Nightlife Card === */
+        .night-item { padding: 22px; border-bottom: 1px solid #E5E5EA; }
+        .n-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .n-name { font-size: 18px; font-weight: 800; color: #000; }
+        .n-tag { 
+            font-size: 11px; background: #FFF9E6; color: #B7791F; padding: 4px 8px; 
+            border-radius: 6px; text-transform: uppercase; font-weight: 800;
         }
-        .night-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .night-title { font-size: 18px; font-weight: 700; color: #000; }
-        .night-tag { 
-            font-size: 11px; font-weight: 700; color: #8E8E93; background: #F2F2F7;
-            padding: 4px 8px; border-radius: 6px; text-transform: uppercase;
-        }
-        .night-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 15px; }
-        .night-meta { 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-top: 1px solid #F5F5F7; padding-top: 12px; font-size: 13px; color: #8E8E93; font-weight: 600;
-        }
-        .night-link { color: #007AFF; text-decoration: none; font-weight: 700; }
-
-        /* === Finland Ticket UI === */
-        .ticket-card {
-            background: linear-gradient(135deg, #002255, #004488); color: white;
-            border-radius: 18px; padding: 20px; margin-bottom: 30px;
-            box-shadow: 0 8px 25px rgba(0, 34, 85, 0.25); position: relative;
-        }
-        .ticket-top { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .ticket-lbl { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
-        .ticket-val { font-size: 20px; font-weight: 700; }
-        .ticket-price { font-size: 32px; font-weight: 300; text-align: right; margin-top: 10px; }
-        .ticket-info { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px; font-size: 14px; opacity: 0.9; line-height: 1.5; }
+        .n-desc { font-size: 15px; color: #555; margin-bottom: 15px; line-height: 1.5; }
+        .n-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #888; }
+        .n-link { color: #007AFF; text-decoration: none; }
 
         /* === Finland Vertical Timeline === */
         .fi-timeline { padding: 30px 20px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
@@ -202,49 +185,42 @@
         }
         
         .fi-title { font-size: 18px; font-weight: 700; color: #000; margin-bottom: 6px; }
-        .fi-desc { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 10px; text-align: justify; }
+        .fi-desc { font-size: 16px; color: #636366; line-height: 1.7; margin-bottom: 12px; text-align: justify; }
         
         .transport-pill { 
             display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #0044CC; 
-            background: #F0F7FF; padding: 6px 12px; border-radius: 8px; font-weight: 600; border: 1px solid #E1F0FF;
+            background: #F0F7FF; padding: 8px 14px; border-radius: 10px; font-weight: 600; border: 1px solid #E1F0FF;
         }
 
-        /* === Tab Bar === */
+        /* === Bottom Tab Bar === */
         .tab-bar {
-            position: fixed; bottom: 0; width: 100%; height: 90px;
-            background: rgba(255,255,255,0.92); backdrop-filter: blur(30px);
-            border-top: 0.5px solid rgba(0,0,0,0.15);
+            position: fixed; bottom: 0; width: 100%; height: 95px;
+            background: rgba(255,255,255,0.96); border-top: 0.5px solid rgba(0,0,0,0.15);
             display: flex; justify-content: space-around; padding-top: 12px;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
+            z-index: 9999; padding-bottom: 20px;
         }
         .tab-item {
             display: flex; flex-direction: column; align-items: center; width: 20%;
             color: #999; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;
         }
         .tab-item.active { color: #000; transform: translateY(-2px); }
-        .tab-icon { font-size: 26px; margin-bottom: 4px; }
+        .tab-icon { font-size: 26px; margin-bottom: 5px; }
 
         /* Checklist */
-        .check-row { padding: 20px 24px; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
+        .check-row { padding: 22px 24px; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
         .check-label { font-size: 17px; font-weight: 500; color: #000; }
-        input[type="checkbox"] { width: 24px; height: 24px; accent-color: #34C759; }
+        input[type="checkbox"] { width: 26px; height: 26px; accent-color: #34C759; border-radius: 8px; }
 
     </style>
 </head>
 <body>
-
-<input type="radio" name="tab" id="tab1" checked>
-<input type="radio" name="tab" id="tab2">
-<input type="radio" name="tab" id="tab3">
-<input type="radio" name="tab" id="tab4">
-<input type="radio" name="tab" id="tab5">
 
 <div class="nav-bar">
     <div class="nav-subtitle">2026 Trip</div>
     <div class="nav-title" id="page-title">旅程概覽</div>
 </div>
 
-<div id="page-itinerary" class="view-container active">
+<div id="page-itinerary" class="page-container active">
     
     <div class="section-header">Day 1 • 2月2日 (一)</div>
     <div class="ios-card">
@@ -252,7 +228,7 @@
             <div class="t-left"><div class="t-time">05:45</div><div class="t-badge bg-fi">HEL</div></div>
             <div class="t-right">
                 <div class="t-title">抵達赫爾辛基 (HEL)</div>
-                <div class="t-desc">領取行李後，搭火車出市區快閃。</div>
+                <div class="t-desc">領取行李後，直接搭火車出市區快閃 (路線請看芬蘭頁)。</div>
             </div>
         </div>
         <div class="timeline-row">
@@ -276,15 +252,17 @@
     <div class="ios-card">
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">早上</div><div class="t-badge bg-cz">PRG</div></div>
-            <div class="t-right"><div class="t-title">舊城區 & 換錢</div><div class="t-desc">找 ATM (KB / Air Bank)。參觀舊城廣場、天文鐘。</div></div>
+            <div class="t-right">
+                <div class="t-title">舊城區 & 換錢</div>
+                <div class="t-desc">找 ATM (KB / Air Bank) 提款。參觀舊城廣場、天文鐘。</div>
+            </div>
         </div>
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">下午</div><div class="t-badge bg-cz">PRG</div></div>
-            <div class="t-right"><div class="t-title">查理大橋</div><div class="t-desc">漫步拍照，摸「聖約翰」銅像許願。</div></div>
-        </div>
-        <div class="timeline-row">
-            <div class="t-left"><div class="t-time">晚上</div><div class="t-badge bg-cz">PRG</div></div>
-            <div class="t-right"><div class="t-title">寄存行李</div><div class="t-desc">收拾大喼存酒店，準備輕裝去波蘭。</div></div>
+            <div class="t-right">
+                <div class="t-title">查理大橋</div>
+                <div class="t-desc">漫步拍照，建議摸「聖約翰」銅像底座許願。</div>
+            </div>
         </div>
     </div>
 
@@ -292,11 +270,17 @@
     <div class="ios-card">
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">上午</div><div class="t-badge bg-cz">PRG</div></div>
-            <div class="t-right"><div class="t-title">布拉格城堡區</div><div class="t-desc">參觀聖維特大教堂 (St. Vitus) 及黃金巷。</div></div>
+            <div class="t-right">
+                <div class="t-title">布拉格城堡區</div>
+                <div class="t-desc">參觀聖維特大教堂 (St. Vitus) 及黃金巷。</div>
+            </div>
         </div>
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">14:00</div><div class="t-badge bg-pl">Train</div></div>
-            <div class="t-right"><div class="t-title">火車往克拉科夫</div><div class="t-desc">車程約 6-7 小時。</div></div>
+            <div class="t-right">
+                <div class="t-title">火車往克拉科夫 (Krakow)</div>
+                <div class="t-desc">車程約 6-7 小時。</div>
+            </div>
         </div>
     </div>
 
@@ -311,7 +295,7 @@
             </div>
         </div>
     </div>
-
+    
     <div class="section-header">Day 5 • 2月6日 (五)</div>
     <div class="ios-card">
         <div class="timeline-row">
@@ -320,7 +304,7 @@
         </div>
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">下午</div><div class="t-badge bg-pl">KRK</div></div>
-            <div class="t-right"><div class="t-title">舊城漫遊</div><div class="t-desc">瓦維爾城堡、紡織會館。</div></div>
+            <div class="t-right"><div class="t-title">舊城漫遊</div><div class="t-desc">瓦維爾城堡、紡織會館、猶太區。</div></div>
         </div>
     </div>
 
@@ -328,14 +312,14 @@
     <div class="ios-card">
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">10:00</div><div class="t-badge bg-pl">Train</div></div>
-            <div class="t-right"><div class="t-title">火車往 Wroclaw</div><div class="t-desc">車程約 3 小時。</div></div>
+            <div class="t-right"><div class="t-title">火車往弗羅茨瓦夫</div><div class="t-desc">車程約 3 小時。</div></div>
         </div>
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">下午</div><div class="t-badge bg-pl">WRO</div></div>
             <div class="t-right"><div class="t-title">尋找小矮人</div><div class="t-desc">舊城廣場尋寶活動。</div></div>
         </div>
     </div>
-
+    
     <div class="section-header">Day 7 • 2月8日 (日)</div>
     <div class="ios-card">
         <div class="timeline-row">
@@ -352,14 +336,15 @@
     <div class="ios-card">
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">10:10</div><div class="t-badge bg-pl">Train</div></div>
-            <div class="t-right"><div class="t-title">火車返布拉格</div><div class="t-desc">約 4 小時車程。</div></div>
+            <div class="t-right">
+                <div class="t-title">火車返布拉格</div><div class="t-desc">車程約 4 小時。</div></div>
         </div>
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">19:00</div><div class="t-badge bg-cz">PRG</div></div>
             <div class="t-right">
                 <div class="t-title">歌劇《Dido and Aeneas》</div>
-                <div class="t-desc">Estates Theatre。</div>
-                <div class="t-note">🎭 Smart Casual</div>
+                <div class="t-desc">地點：Estates Theatre。</div>
+                <div class="t-note">🎭 請穿著 Smart Casual。</div>
             </div>
         </div>
     </div>
@@ -368,173 +353,140 @@
     <div class="ios-card">
         <div class="timeline-row">
             <div class="t-left"><div class="t-time">16:30</div><div class="t-badge bg-cz">PRG</div></div>
-            <div class="t-right"><div class="t-title">出發前往機場</div><div class="t-desc">19:35 飛機回程。</div></div>
+            <div class="t-right">
+                <div class="t-title">前往機場</div>
+                <div class="t-desc">19:35 飛機回程 (Finnair)。</div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="page-cz" class="page-scroll">
-    <div class="weather weather-card cz">
-        <div class="weather-header">
-            <div><div class="weather-city">布拉格</div><div class="weather-eng">Prague</div></div>
-            <div class="weather-condition" id="wc-cz">...</div>
+<div id="page-cz" class="page-container">
+    <div class="weather-card cz">
+        <div class="w-header">
+            <div><div class="w-city">布拉格</div><div class="w-eng">Prague</div></div>
+            <div class="w-cond" id="wc-cz">Loading...</div>
         </div>
-        <div class="weather-temp" id="wt-cz">--°</div>
-        <div class="weather-grid">
-            <div class="weather-item">💧 <span id="wh-cz">--%</span></div>
-            <div class="weather-item">☔ <span id="wr-cz">--mm</span></div>
+        <div class="w-temp" id="wt-cz">--°</div>
+        <div class="w-grid">
+            <div class="w-item">💧 <span id="wh-cz">--%</span></div>
+            <div class="w-item">☔ <span id="wr-cz">--mm</span></div>
         </div>
         <div class="hourly-scroll" id="wf-cz"></div>
     </div>
 
-    <div class="section-header">🏰 必去景點</div>
+    <div class="section-header">必去景點</div>
     <div class="ios-card">
-        <details class="ios-detail">
+        <details>
             <summary>布拉格城堡 (Prague Castle)</summary>
-            <div class="content-body">
-                <div class="info-grid">
-                    <div class="info-label">時間</div><div class="info-val">06:00 - 22:00</div>
-                    <div class="info-label">官網</div><div class="info-val">hrad.cz</div>
-                </div>
+            <div class="detail-body">
                 <div class="warn-box">⚠️ 入場需安檢，勿帶大包。</div>
                 <div class="wiki-text">
-                    <strong>【千年權力象徵】</strong>
-                    <p>這不只是一座城堡，而是被金氏世界紀錄認證為「世界上最大的古堡建築群」，佔地超過 7 萬平方米。自 9 世紀以來，這裡一直是捷克國王、神聖羅馬帝國皇帝以及現在捷克總統的官邸，象徵著國家的最高權力。</p>
-                    <strong>【必看：聖維特大教堂】</strong>
-                    <p>城堡內最顯眼的黑色哥德式尖塔就是 St. Vitus Cathedral。這座教堂花了近 600 年才完工！走進去，一定要尋找左側第三扇彩繪玻璃窗，那是捷克國寶級畫家<strong>慕夏 (Alphonse Mucha)</strong> 的作品，色彩鮮豔且充滿流動感，描繪了斯拉夫民族的歷史，與傳統鑲嵌玻璃截然不同。</p>
-                    <strong>【必看：黃金巷】</strong>
-                    <p>這是一條充滿色彩繽紛小屋的窄巷。傳說以前住著為國王煉金的術士，試圖煉製長生不老藥。著名的 22 號藍色小屋曾是大文豪<strong>卡夫卡</strong>的居所，他在這裡完成了許多作品。現在這些小屋變成了精緻的紀念品店，可以買到特色的書籤和錫製玩具。</p>
+                    <p><strong>【千年權力象徵】</strong>這不只是一座城堡，而是被金氏世界紀錄認證為「世界上最大的古堡建築群」，佔地超過 7 萬平方米。自 9 世紀以來，這裡一直是捷克國王、神聖羅馬帝國皇帝以及現在捷克總統的官邸，象徵著國家的最高權力。站在城堡的觀景台，你可以俯瞰整個布拉格的紅屋頂，景色絕美。</p>
+                    <p><strong>【必看亮點：聖維特大教堂】</strong>城堡內最顯眼的黑色哥德式尖塔就是 St. Vitus Cathedral。這座教堂花了近 600 年才完工！走進去，一定要尋找左側第三扇彩繪玻璃窗，那是捷克國寶級畫家<strong>慕夏 (Alphonse Mucha)</strong> 的作品，色彩鮮豔且充滿流動感，描繪了斯拉夫民族的歷史，與傳統鑲嵌玻璃截然不同。</p>
+                    <p><strong>【必看亮點：黃金巷】</strong>這是一條充滿色彩繽紛小屋的窄巷。傳說以前住著為國王煉金的術士，試圖煉製長生不老藥。著名的 22 號藍色小屋曾是大文豪<strong>卡夫卡 (Franz Kafka)</strong> 的居所，他在這裡完成了許多作品。現在這些小屋變成了精緻的紀念品店，可以買到特色的書籤和錫製玩具。</p>
                 </div>
-                <div class="btn-group">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Prague+Castle" class="btn btn-map">📍 地圖</a>
-                    <a href="https://www.hrad.cz/en" target="_blank" class="btn btn-web">🌐 官網</a>
-                </div>
+                <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Prague+Castle" class="btn">📍 Google Map</a>
             </div>
         </details>
 
-        <details class="ios-detail">
+        <details>
             <summary>查理大橋 (Charles Bridge)</summary>
-            <div class="content-body">
+            <div class="detail-body">
                 <div class="warn-box">⚠️ 這裡是扒手黑點，請小心財物。</div>
                 <div class="wiki-text">
-                    <strong>【露天的巴洛克博物館】</strong>
-                    <p>這座橫跨伏爾塔瓦河的石橋建於 1357 年 7 月 9 日 5 點 31 分（1-3-5-7-9-7-5-3-1）。這是一個由查理四世親自選定的吉時。民間傳說為了讓橋樑更加堅固，建築師在石灰砂漿中混入了<strong>成千上萬顆雞蛋</strong>。</p>
-                    <strong>【觸摸好運】</strong>
-                    <p>橋上有 30 座巴洛克風格的聖人雕像。其中最有名的是<strong>「聖約翰·內波穆克」</strong>（頭上有五顆星的那位）。傳說他因為拒絕向國王透露皇后的告解內容，被憤怒的國王從這座橋上丟進河裡淹死。現在遊客都會去摸他底座的銅浮雕（已被摸得金光閃閃），據說會帶來好運，或者保佑你將來重回布拉格。</p>
+                    <p><strong>【露天的巴洛克博物館】</strong>這座橫跨伏爾塔瓦河的石橋建於 1357 年 7 月 9 日 5 點 31 分（1-3-5-7-9-7-5-3-1）。這是一個由查理四世親自選定的吉時，是一個迴文數字。民間傳說為了讓橋樑更加堅固，建築師在石灰砂漿中混入了<strong>成千上萬顆雞蛋</strong>。</p>
+                    <p><strong>【觸摸好運】</strong>橋上有 30 座巴洛克風格的聖人雕像。其中最有名的是<strong>「聖約翰·內波穆克」</strong>（頭上有五顆星的那位）。傳說他因為拒絕向國王透露皇后的告解內容，被憤怒的國王從這座橋上丟進河裡淹死。現在遊客都會去摸他底座的銅浮雕（已被摸得金光閃閃），據說會帶來好運，或者保佑你將來重回布拉格。建議清晨 8 點前來，避開擁擠人潮。</p>
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Charles+Bridge" class="btn">📍 Google Map</a>
+                <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Charles+Bridge" class="btn">📍 Google Map</a>
             </div>
         </details>
 
-        <details class="ios-detail"><summary>國家博物館 (National Museum)</summary><div class="content-body"><div class="wiki-text"><p><strong>【避寒首選】</strong>瓦茨拉夫廣場盡頭的宏偉建築。內部金碧輝煌，尤其是中央大廳的大理石樓梯，絕對是打卡熱點。館內收藏了大量捷克歷史文物、礦石和自然標本（包括巨大的鯨魚骨架）。博物館見證了捷克許多重要歷史時刻，包括布拉格之春期間，蘇聯坦克曾在建築外牆留下彈孔。現在修復後已煥然一新，是了解捷克歷史的最佳地點。</p></div><a href="https://www.google.com/maps/search/?api=1&query=National+Museum+Prague" class="btn">📍 Google Map</a></div></details>
-        
-        <details class="ios-detail"><summary>跳舞的房子 (Dancing House)</summary><div class="content-body"><div class="wiki-text"><p><strong>【解構主義傑作】</strong>由建築師 Frank Gehry 設計，外型像一對在跳舞的男女（Ginger & Fred）。這棟現代建築在古典的布拉格中非常突出，甚至有點格格不入，但也因此成為地標。頂樓有一間名為 "Glass Bar" 的酒吧，可以買杯飲品上去看河景，是欣賞布拉格夕陽的隱世好去處，不用預約，價格也比旅遊區合理。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Dancing+House" class="btn">📍 Google Map</a></div></details>
-        
-        <details class="ios-detail"><summary>列儂牆 (Lennon Wall)</summary><div class="content-body"><div class="wiki-text"><p><strong>【愛與和平的象徵】</strong>這原本只是一面普通的牆，但在 80 年代，捷克青年開始在上面塗鴉披頭四的歌詞和約翰連儂的肖像，表達對共產政權的不滿和對自由的嚮往。雖然當局多次粉刷覆蓋，但第二天總會出現新的塗鴉。現在這裡充滿了色彩繽紛的塗鴉，每天都在變化，是影相打卡的文青聖地。常常有街頭藝人在這裡唱 Beatles 的歌。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Lennon+Wall" class="btn">📍 Google Map</a></div></details>
-        
-        <details class="ios-detail"><summary>斯特拉霍夫圖書館</summary><div class="content-body"><div class="wiki-text"><p><strong>【世界最美圖書館之一】</strong>位於斯特拉霍夫修道院內，擁有極其華麗的巴洛克式天花板壁畫和古老的書架。圖書館分為「神學大廳」和「哲學大廳」，美得像哈利波特電影場景。這裡也收藏了許多珍貴的中世紀手稿和奇珍異寶（如渡渡鳥標本）。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Strahov+Library" class="btn">📍 Google Map</a></div></details>
+        <details><summary>國家博物館 (避寒)</summary><div class="detail-body"><p><strong>【避寒首選】</strong>瓦茨拉夫廣場盡頭的宏偉建築。內部金碧輝煌，尤其是中央大廳的大理石樓梯，絕對是打卡熱點。館內收藏了大量捷克歷史文物、礦石和自然標本。如果外面太冷，進來行半日非常舒服，暖氣充足。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=National+Museum+Prague" class="btn">📍 Google Map</a></div></details>
+        <details><summary>跳舞的房子</summary><div class="detail-body"><p><strong>【解構主義】</strong>由建築師 Frank Gehry 設計，外型像一對在跳舞的男女。這棟現代建築在古典的布拉格中非常突出。頂樓有 Glass Bar 可以看河景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Dancing+House" class="btn">📍 Google Map</a></div></details>
+        <details><summary>列儂牆</summary><div class="detail-body"><p><strong>【愛與和平】</strong>充滿塗鴉的牆壁。在 80 年代，捷克青年開始在上面塗鴉披頭四歌詞，表達對共產政權的不滿。現在是文青打卡聖地。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Lennon+Wall" class="btn">📍 Google Map</a></div></details>
+        <details><summary>斯特拉霍夫圖書館</summary><div class="detail-body"><p><strong>【世界最美圖書館】</strong>擁有極其華麗的巴洛克式天花板壁畫和古老的書架。分為「神學大廳」和「哲學大廳」，美得像哈利波特場景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Strahov+Library" class="btn">📍 Google Map</a></div></details>
     </div>
 
     <div class="section-header">夜生活 (5選)</div>
-    <div class="night-card">
-        <div class="night-item"><div class="n-head"><div class="n-name">Reduta Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">布拉格最古老爵士俱樂部，前美國總統克林頓曾在此演出。</div><div class="n-meta"><span>19:00 - 00:00</span><a href="https://www.google.com/maps/search/?api=1&query=Reduta+Jazz+Club" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Jazz Dock</div><div class="n-tag">Modern</div></div><div class="n-desc">河邊玻璃屋爵士吧，景色極佳，非常 Chill。</div><div class="n-meta"><span>17:00 - 02:00</span><a href="https://www.google.com/maps/search/?api=1&query=Jazz+Dock+Prague" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Hemingway Bar</div><div class="n-tag">Cocktail</div></div><div class="n-desc">排名第一的酒吧，主打 Absinthe，需預約。</div><div class="n-meta"><span>17:00 - 01:00</span><a href="https://www.google.com/maps/search/?api=1&query=Hemingway+Bar+Prague" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Billiard Club Harlequin</div><div class="n-tag">Pool</div></div><div class="n-desc">大型桌球會，環境寬敞。</div><div class="n-meta"><span>14:00 - 02:00</span><a href="https://www.google.com/maps/search/?api=1&query=Billiard+Club+Harlequin+Prague" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Karlovy Lazne</div><div class="n-tag">Club</div></div><div class="n-desc">中歐最大夜店，5 層樓高！</div><div class="n-meta"><span>21:00 - 05:00</span><a href="https://www.google.com/maps/search/?api=1&query=Karlovy+Lazne" class="n-link">📍 Map</a></div></div>
+    <div class="card">
+        <div class="night-item"><div class="n-head"><div class="n-name">Reduta Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">布拉格最古老爵士俱樂部，前美國總統克林頓曾在此演出。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Reduta+Jazz+Club" class="n-link">📍 地圖 • 19:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Jazz Dock</div><div class="n-tag">Modern</div></div><div class="n-desc">河邊玻璃屋爵士吧，景色極佳，非常 Chill。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Jazz+Dock+Prague" class="n-link">📍 地圖 • 17:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Hemingway Bar</div><div class="n-tag">Cocktail</div></div><div class="n-desc">排名第一的酒吧，主打 Absinthe，需預約。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Hemingway+Bar+Prague" class="n-link">📍 地圖 • 17:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Billiard Club Harlequin</div><div class="n-tag">Pool</div></div><div class="n-desc">大型桌球會，環境寬敞。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Billiard+Club+Harlequin+Prague" class="n-link">📍 地圖 • 14:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Karlovy Lazne</div><div class="n-tag">Club</div></div><div class="n-desc">中歐最大夜店，5 層樓高！</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Karlovy+Lazne" class="n-link">📍 地圖 • 21:00開</a></div>
     </div>
 </div>
 
-<div id="page-pl" class="page-scroll">
-    <div class="weather w-pl">
-        <div class="w-top"><div><div class="w-city">克拉科夫</div><div style="opacity:0.8">Krakow</div></div><div class="w-desc" id="wc-pl">...</div></div>
+<div id="page-pl" class="page-container">
+    <div class="weather-card pl">
+        <div class="w-header"><div><div class="w-city">克拉科夫</div><div class="w-eng">Krakow</div></div><div class="w-cond" id="wc-pl">Loading...</div></div>
         <div class="w-temp" id="wt-pl">--°</div>
+        <div class="w-grid"><div class="w-item">💧 <span id="wh-pl">--%</span></div><div class="w-item">☔ <span id="wr-pl">--mm</span></div></div>
+        <div class="hourly-scroll" id="wf-pl"></div>
     </div>
 
     <div class="section-header">🇵🇱 必去景點</div>
     <div class="ios-card">
-        <details class="ios-detail">
-            <summary>奧斯威辛集中營 (Auschwitz)</summary>
-            <div class="content-body">
-                <div class="info-grid">
-                    <div class="info-label">需預約</div><div class="info-val">必須提前官網訂票</div>
-                    <div class="info-label">官網</div><div class="info-val">visit.auschwitz.org</div>
-                </div>
-                <div class="warn-box">⚠️ <strong>注意：</strong> 包包尺寸不能超過 A4 大小。場內禁止大聲喧嘩。</div>
+        <details>
+            <summary>奧斯威辛集中營</summary>
+            <div class="detail-body">
+                <div class="warn-box">⚠️ 必須預約。不可帶大包。</div>
                 <div class="wiki-text">
                     <p><strong>【沈重的歷史】</strong>這裡不是一個旅遊景點，而是一個讓人戰慄的歷史見證地。二戰期間，納粹德國在這裡殺害了超過 110 萬人，其中絕大多數是猶太人。這是一生必去一次的地方，提醒我們和平的珍貴。</p>
                     <p>參觀分為兩部分：<strong>一號營 (Auschwitz I)</strong> 由原本的紅磚軍營改建，展示了受害者的頭髮、鞋子和毒氣罐；<strong>二號營 (Birkenau)</strong> 是後期擴建的滅絕營，非常廣闊空曠。冬天去風非常大，那種刺骨的寒冷會讓你切身感受到當年囚犯在單薄條紋衣下的絕望。</p>
                 </div>
-                <div class="btn-group">
-                    <a href="https://visit.auschwitz.org/" target="_blank" class="btn-action btn-web">🌐 訂票</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Auschwitz" class="btn-action btn-map">📍 地圖</a>
-                </div>
+                <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Auschwitz" class="btn">📍 Google Map</a>
             </div>
         </details>
-
-        <details class="ios-detail">
+        
+        <details>
             <summary>維利奇卡鹽礦 (Salt Mine)</summary>
-            <div class="content-body">
-                <div class="info-box"><div class="info-label">溫度</div><div class="info-val">恆溫 14°C</div></div>
+            <div class="detail-body">
+                <div class="warn-box">⚠️ 需走 800 級樓梯。</div>
                 <div class="wiki-text">
-                    <p><strong>【地下藝術宮殿】</strong>這是一個深達 327 米、長度超過 300 公里的地下迷宮，自 13 世紀就開始開採。最神奇的是，這裡不僅僅是礦坑，而是一座地下城市。</p>
-                    <p>最震撼的景點是<strong>「聖金加禮拜堂 (Chapel of St. Kinga)」</strong>。這座巨大的地下教堂位於地下 101 米，連同裡面的祭壇、聖經浮雕、地板，甚至天花板上華麗的<strong>大型水晶吊燈</strong>，全部都是礦工們用「鹽岩」一點一點雕刻出來的！這裡充滿鹽分的空氣對呼吸道非常有益。注意：參觀初期需要走約 800 級樓梯下行，回程有高速電梯。</p>
+                    <p><strong>【地下宮殿】</strong>這是一個深達 327 米、長度超過 300 公里的地下迷宮，自 13 世紀就開始開採。最神奇的是，這裡不僅僅是礦坑，而是一座地下城市。</p>
+                    <p>最震撼的景點是<strong>「聖金加禮拜堂 (Chapel of St. Kinga)」</strong>。這座巨大的地下教堂位於地下 101 米，連同裡面的祭壇、聖經浮雕、地板，甚至天花板上華麗的<strong>大型水晶吊燈</strong>，全部都是礦工們用「鹽岩」一點一點雕刻出來的！這裡充滿鹽分的空氣對呼吸道非常有益。</p>
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Wieliczka+Salt+Mine" class="btn">📍 Google Map</a>
+                <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wieliczka+Salt+Mine" class="btn">📍 Google Map</a>
             </div>
         </details>
 
-        <details class="ios-detail"><summary>瓦維爾城堡</summary><div class="content-body"><div class="wiki-text"><p><strong>【波蘭的心臟】</strong>歷代波蘭國王的居所。一定要去城堡山腳下的河邊看<strong>「瓦維爾龍」</strong>雕像。傳說以前有條惡龍住在這裡吃人，後來被一個鞋匠用塞滿硫磺的羊毒死了。現在這個銅像每隔幾分鐘就會真的噴出火焰，非常過癮！</p></div><a href="https://www.google.com/maps/search/?api=1&query=Wawel+Castle" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>辛德勒工廠</summary><div class="content-body"><div class="wiki-text"><p><strong>【電影原址】</strong>如果你看過電影《舒特拉的名單》，一定要來這裡。這就是奧斯卡·辛德勒當年營救 1200 名猶太人的搪瓷工廠原址。現在改建為博物館，講述納粹佔領下的克拉科夫歷史。展覽做得非常有「沉浸感」，還原了二戰時期的街道、辦公室和防空洞。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Oskar+Schindler+Enamel+Factory" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>紡織會館</summary><div class="content-body"><div class="wiki-text"><p><strong>【最古老的商場】</strong>位於舊城廣場的正中央，是一座宏偉的文藝復興建築。幾百年來，這裡一直是國際貿易中心。現在一樓是紀念品市集，賣很多波蘭特色的<strong>琥珀</strong>、木雕和蕾絲製品。二樓則是國家博物館的畫廊。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Cloth+Hall+Krakow" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>聖母聖殿</summary><div class="content-body"><div class="wiki-text"><p><strong>【號手的傳說】</strong>位於廣場旁，特徵是兩座高度不一的高塔。每小時，塔頂會有號手吹響號角，但吹到一半會突然停止。這是為了紀念 13 世紀一位號手在發出蒙古軍隊入侵警報時被箭射中喉嚨而死的英勇事蹟。內部的藍色星空天花板和巨大的木雕祭壇非常壯觀。</p></div><a href="https://www.google.com/maps/search/?api=1&query=St+Marys+Basilica+Krakow" class="btn">📍 Map</a></div></details>
+        <details><summary>瓦維爾城堡</summary><div class="detail-body"><p>波蘭皇室居所。必看河邊會噴火的「瓦維爾龍」雕像。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wawel+Castle" class="btn">📍 Map</a></div></details>
+        <details><summary>辛德勒工廠</summary><div class="detail-body"><p>電影《舒特拉的名單》原址，現在是二戰博物館。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Oskar+Schindler+Enamel+Factory" class="btn">📍 Map</a></div></details>
+        <details><summary>尋找小矮人 (Wroclaw)</summary><div class="detail-body"><p>全城 600 多隻小矮人銅像，源於反共產運動。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wroclaw+Gnomes" class="btn">📍 Map</a></div></details>
+        <details><summary>拉茨瓦維采全景畫</summary><div class="detail-body"><p>360 度巨型油畫，配合真實道具，視覺效果像 VR。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Racławice+Panorama" class="btn">📍 Map</a></div></details>
     </div>
 
-    <div class="section-header">夜生活 (Krakow)</div>
-    <div class="night-card">
-        <div class="night-item"><div class="n-head"><div class="n-name">Harris Piano Jazz Bar</div><div class="n-tag">Jazz</div></div><div class="n-desc">市集廣場旁的著名爵士吧。磚牆地窖風格，每晚有現場演出。</div><div class="n-meta"><span>18:00 - 02:00</span><a href="https://www.google.com/maps/search/?api=1&query=Harris+Piano+Jazz+Bar" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Alchemia</div><div class="n-tag">Pub</div></div><div class="n-desc">猶太區傳奇酒吧，裝修像煉金術實驗室，燭光昏暗，超有 Feel。</div><div class="n-meta"><span>09:00 - 02:00</span><a href="https://www.google.com/maps/search/?api=1&query=Alchemia+Krakow" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Klub Diament</div><div class="n-tag">Pool</div></div><div class="n-desc">靠近舊城區，非常大的桌球場，有酒飲，氣氛輕鬆。</div><div class="n-meta"><span>12:00 - 00:00</span><a href="https://www.google.com/maps/search/?api=1&query=Klub+Diament+Krakow" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Singer</div><div class="n-tag">Unique</div></div><div class="n-desc">每張枱都是一部舊衣車！非常有特色的懷舊酒吧。</div><div class="n-meta"><span>18:00 - 02:00</span><a href="https://www.google.com/maps/search/?api=1&query=Singer+Cafe+Krakow" class="n-link">📍 Map</a></div></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Forum Przestrzenie</div><div class="n-tag">Chill</div></div><div class="n-desc">由舊酒店改建的河邊廢墟風酒吧，年輕人最愛。</div><div class="n-meta"><span>10:00 - 01:00</span><a href="https://www.google.com/maps/search/?api=1&query=Forum+Przestrzenie" class="n-link">📍 Map</a></div></div>
-    </div>
-
-    <div class="weather weather-card pl" style="margin-top:40px;">
-        <div class="w-top"><div><div class="w-city">弗羅茨瓦夫</div><div style="opacity:0.8">Wroclaw</div></div><div class="w-desc" id="wc-wro">...</div></div>
-        <div class="w-temp" id="wt-wro">--°</div>
-    </div>
-
-    <div class="section-header">🇵🇱 Wroclaw 必去</div>
-    <div class="ios-card">
-        <details class="ios-detail"><summary>尋找小矮人</summary><div class="content-body"><div class="wiki-text"><p><strong>【城市象徵】</strong>全城 600 多隻。源於 80 年代反抗共產的「橙色替代」運動，當時人們用小矮人塗鴉來諷刺政府。現在變成了可愛的銅像，每隻都有不同性格：銀行門口有「取錢小矮人」，監獄門口有「囚犯小矮人」。不用特意找，在舊城區走路時留意腳邊就會發現驚喜。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Wroclaw+Gnomes" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>拉茨瓦維采全景畫</summary><div class="content-body"><div class="wiki-text"><p><strong>【360度巨型油畫】</strong>必看！這是一幅長 114 米、高 15 米的巨型環形油畫，描繪波蘭起義軍戰勝俄國的戰役。特別之處在於它是 360 度展示的，畫作前方有真實的沙土、樹枝等道具，與畫布完美融合，製造出極強的立體感。這是波蘭人的驕傲，視覺效果非常震撼。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Racławice+Panorama" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>Hydropolis</summary><div class="content-body"><div class="wiki-text"><p><strong>【型格科技館】</strong>由地下蓄水池改建。入口是一道由「水打印機」造成的水簾，上面會打印出圖案和文字，人行過會自動停水。內部燈光幽暗，很有氣氛，展示關於水的科學。非常適合太冷不想在戶外走的時候去。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Hydropolis" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>Kolejkowo</summary><div class="content-body"><div class="wiki-text"><p><strong>【小人國】</strong>位於 Sky Tower 摩天大樓裡面。裡面有極精緻的波蘭城市模型、火車在跑，甚至有日夜變化（會天黑開燈）。你會見到縮細版的 Wroclaw 街景，連小矮人都有縮細版！</p></div><a href="https://www.google.com/maps/search/?api=1&query=Kolejkowo+Wroclaw" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>座堂島</summary><div class="content-body"><div class="wiki-text"><p><strong>【點燈人】</strong>城市最古老部分。每晚黃昏，會有穿黑色斗篷的點燈人出來，人手點亮煤氣街燈。非常浪漫。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Cathedral+Island+Wroclaw" class="btn">📍 Map</a></div></details>
-        <details class="ios-detail"><summary>百年廳</summary><div class="content-body"><div class="wiki-text"><p><strong>【世界遺產】</strong>1913 年建成，當時世界上最大的混凝土圓頂建築。建築迷必看。</p></div><a href="https://www.google.com/maps/search/?api=1&query=Centennial+Hall+Wroclaw" class="btn">📍 Map</a></div></details>
-    </div>
-
-    <div class="section-header">夜生活 (Wroclaw)</div>
+    <div class="section-header">夜生活 (5選)</div>
     <div class="card">
-        <div class="night-item"><div class="n-head"><div class="n-name">Vertigo Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">Wroclaw 最好的爵士俱樂部。裝修優雅，每日都有現場音樂會。</div><a href="https://www.google.com/maps/search/?api=1&query=Vertigo+Jazz+Club" class="n-link">📍 Map</a></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">橋底酒吧街</div><div class="n-tag">Unique</div></div><div class="n-desc"><strong>Bogusławskiego 街</strong>：火車在頭頂經過時會有隆隆聲，配上霓虹燈，非常有 Cyberpunk 感覺。</div><a href="https://www.google.com/maps/search/?api=1&query=Bogusławskiego+Wrocław" class="n-link">📍 Map</a></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Bandaclub</div><div class="n-tag">Pool</div></div><div class="n-desc">Sky Tower 內的桌球會，環境高檔。</div><a href="https://www.google.com/maps/search/?api=1&query=Bandaclub+Wrocław" class="n-link">📍 Map</a></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Nietota</div><div class="n-tag">Art Bar</div></div><div class="n-desc">裝修極具藝術感，週末常有 Live Music。</div><a href="https://www.google.com/maps/search/?api=1&query=Nietota+Wroclaw" class="n-link">📍 Map</a></div>
-        <div class="night-item"><div class="n-head"><div class="n-name">Schody Donikąd</div><div class="n-tag">Cocktails</div></div><div class="n-desc">充滿懷舊氣氛的酒吧，傢俬都是古董。</div><a href="https://www.google.com/maps/search/?api=1&query=Schody+Donikąd" class="n-link">📍 Map</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Harris Piano Jazz Bar</div><div class="n-tag">Jazz</div></div><div class="n-desc">Krakow 著名爵士吧，磚牆地窖風格。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Harris+Piano+Jazz+Bar" class="n-link">📍 地圖 • 18:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Alchemia</div><div class="n-tag">Pub</div></div><div class="n-desc">猶太區傳奇酒吧，煉金術實驗室風。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Alchemia+Krakow" class="n-link">📍 地圖 • 09:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">橋底酒吧街 (Wroclaw)</div><div class="n-tag">Unique</div></div><div class="n-desc">Bogusławskiego 街，火車經過會隆隆聲。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bogusławskiego+Wrocław" class="n-link">📍 地圖 • 16:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Bandaclub (Wroclaw)</div><div class="n-tag">Pool</div></div><div class="n-desc">Sky Tower 內的高檔桌球會。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bandaclub+Wrocław" class="n-link">📍 地圖 • 10:00開</a></div>
+        <div class="night-item"><div class="n-head"><div class="n-name">Vertigo Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">Wroclaw 最好的爵士樂場地。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Vertigo+Jazz+Club" class="n-link">📍 地圖 • 18:00開</a></div>
+    </div>
+    
+    <div class="section-header" style="margin-top:40px;">弗羅茨瓦夫 (Wroclaw)</div>
+    <div class="weather-card pl">
+        <div class="w-header"><div><div class="w-city">弗羅茨瓦夫</div><div class="w-eng">Wroclaw</div></div><div class="w-cond" id="wc-wro">...</div></div>
+        <div class="w-temp" id="wt-wro">--°</div>
+        <div class="w-grid"><div class="w-item">💧 <span id="wh-wro">--%</span></div><div class="w-item">☔ <span id="wr-wro">--mm</span></div></div>
+        <div class="hourly-scroll" id="wf-wro"></div>
     </div>
 </div>
 
-<div id="page-fi" class="page-scroll">
-    <div class="weather w-fi">
-        <div class="w-top"><div><div class="w-city">赫爾辛基</div><div style="opacity:0.8">Helsinki</div></div><div class="w-desc" id="wc-fi">...</div></div>
+<div id="page-fi" class="page-container">
+    <div class="weather-card fi">
+        <div class="w-header"><div><div class="w-city">赫爾辛基</div><div class="w-eng">Helsinki</div></div><div class="w-cond" id="wc-fi">...</div></div>
         <div class="w-temp" id="wt-fi">--°</div>
+        <div class="w-grid"><div class="w-item">💧 <span id="wh-fi">--%</span></div><div class="w-item">☔ <span id="wr-fi">--mm</span></div></div>
+        <div class="hourly-scroll" id="wf-fi"></div>
     </div>
 
-    <div class="ticket-card">
-        <div class="ticket-top"><div>HSL TRAVEL PASS</div><div>ABC Zone</div></div>
-        <div class="ticket-title">Day Ticket</div>
-        <div class="ticket-price">€11.00</div>
-        <div class="ticket-info">✅ 機場火車 (P/I)  ✅ 電車/巴士  ✅ 芬蘭堡渡輪</div>
+    <div class="card" style="background:#E1F5FE; border:1px solid #B3E5FC; padding:20px;">
+        <div style="font-weight:700; color:#004080; font-size:18px;">🎫 交通全攻略</div>
+        <p style="font-size:15px; color:#333; margin-top:10px;">機場售票機買 <strong>ABC Zone Day Ticket (€11)</strong>。<br>包：機場火車(P/I) + 電車 + 芬蘭堡渡輪。</p>
     </div>
 
     <div class="section-header">A. 經典歷史線</div>
@@ -542,7 +494,7 @@
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 赫爾辛基座堂</div><div class="fi-trans">🚋 電車 2,4,7</div><div class="fi-d">白教堂，地標中的地標，建於沙皇統治時期。純白色的新古典主義建築，站在高台上俯瞰參議院廣場，非常有氣勢。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 烏斯佩斯基大教堂</div><div class="fi-trans">🚶 步行 5 分鐘</div><div class="fi-d">紅磚綠頂金洋蔥頭，俄羅斯東正教風格。內部裝飾金碧輝煌。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. 集市廣場</div><div class="fi-d">碼頭邊的露天市集，有賣小食和紀念品。</div></div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Senate+Square+Helsinki" class="btn">📍 路線地圖</a>
+        <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Senate+Square+Helsinki" class="btn">📍 路線地圖</a>
     </div>
 
     <div class="section-header">B. 舒適避寒線</div>
@@ -550,13 +502,13 @@
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. Oodi 中央圖書館</div><div class="fi-trans">🚶 火車旁</div><div class="fi-d">芬蘭人的客廳。暖氣超足，有 Cafe，可躺著看雪景。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 岩石教堂</div><div class="fi-trans">🚋 電車 1,2</div><div class="fi-d">炸開岩石蓋的教堂，恆溫保暖。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. 老農貿市場</div><div class="fi-trans">🚶 碼頭旁</div><div class="fi-d">室內紅磚街市，必飲熱三文魚湯。</div></div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Oodi+Helsinki" class="btn">📍 路線地圖</a>
+        <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Oodi+Helsinki" class="btn">📍 路線地圖</a>
     </div>
 
     <div class="section-header">C. 海島軍事線</div>
     <div class="card fi-box">
-        <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">芬蘭堡 (Suomenlinna)</div><div class="fi-trans">⛴️ 集市廣場搭 Ferry</div><div class="fi-d">海上要塞，有古炮台和潛艇。海風極大但景色壯觀。船費包在 ABC 車票。</div></div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Suomenlinna" class="btn">📍 路線地圖</a>
+        <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">芬蘭堡 (Suomenlinna)</div><div class="fi-trans">⛴️ 集市廣場搭 Ferry</div><div class="fi-d">海上要塞，有古炮台和潛艇。海風極大但景色壯觀。船費包在 ABC 車票內。</div></div>
+        <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Suomenlinna" class="btn">📍 路線地圖</a>
     </div>
 
     <div class="section-header">D. 設計文青線</div>
@@ -564,17 +516,17 @@
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 靜默禮拜堂</div><div class="fi-trans">🚶 Kamppi</div><div class="fi-d">鬧市中像木桶的建築，裡面極度安靜。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. Amos Rex 美術館</div><div class="fi-d">地面是奇怪的凸起窗口，打卡一流。</div></div>
         <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. Fazer Cafe</div><div class="fi-d">芬蘭國寶級朱古力店，飲熱朱古力。</div></div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Kamppi+Chapel" class="btn">📍 路線地圖</a>
+        <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Kamppi+Chapel" class="btn">📍 路線地圖</a>
     </div>
 </div>
 
-<div id="page-check" class="page-scroll">
+<div id="page-check" class="page-container">
     <div class="section-header">行李清單</div>
     <div class="card">
         <div class="row"><div class="content" style="color:var(--cz-color); font-weight:800;">你 (HKG)</div></div>
         <div class="check-row"><div class="check-label">護照 (1本)</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">歐洲 SIM 卡</div><input type="checkbox"></div>
-        <div class="check-row"><div class="check-label">轉插 (兩腳圓頭)</div><input type="checkbox"></div>
+        <div class="check-row"><div class="check-label">轉插 (兩腳圓頭 Type E/F)</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">暖貼 (大量)</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">牙刷牙膏、拖鞋</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">Superdry (隨身)</div><input type="checkbox"></div>
@@ -582,24 +534,44 @@
     </div>
     <div class="card">
         <div class="row"><div class="content" style="color:var(--fi-color); font-weight:800;">朋友 (UK)</div></div>
-        <div class="check-row"><div class="check-label"><strong>BRP / Visa Proof</strong></div><input type="checkbox"></div>
+        <div class="check-row"><div class="check-label"><strong>BRP / Visa Proof</strong> (必備)</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">香港護照</div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label"><strong>轉插 (UK to EU)</strong></div><input type="checkbox"></div>
         <div class="check-row"><div class="check-label">GHIC / EHIC 卡</div><input type="checkbox"></div>
-        <div class="check-row"><div class="check-label">冷帽 (Beanie)</div><input type="checkbox"></div>
     </div>
 </div>
 
 <div class="tab-bar">
-    <label for="tab1" class="tab-item"><div class="icon">📅</div>行程</label>
-    <label for="tab2" class="tab-item"><div class="icon">🇨🇿</div>捷克</label>
-    <label for="tab3" class="tab-item"><div class="icon">🇵🇱</div>波蘭</label>
-    <label for="tab4" class="tab-item"><div class="icon">🇫🇮</div>芬蘭</label>
-    <label for="tab5" class="tab-item"><div class="icon">✅</div>清單</label>
+    <label class="tab-item" onclick="switchTab('itinerary', this)"><div class="icon">📅</div>行程</label>
+    <label class="tab-item" onclick="switchTab('cz', this)"><div class="icon">🇨🇿</div>捷克</label>
+    <label class="tab-item" onclick="switchTab('pl', this)"><div class="icon">🇵🇱</div>波蘭</label>
+    <label class="tab-item" onclick="switchTab('fi', this)"><div class="icon">🇫🇮</div>芬蘭</label>
+    <label class="tab-item" onclick="switchTab('check', this)"><div class="icon">✅</div>清單</label>
 </div>
 
 <script>
-    // Real-Time Weather Logic
+    function switchTab(pageId, btn) {
+        // Hide all pages
+        document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
+        // Show target page
+        document.getElementById('page-' + pageId).classList.add('active');
+        
+        // Update Bottom Bar Style
+        document.querySelectorAll('.tab-item').forEach(el => el.style.color = '#999');
+        btn.style.color = '#007AFF';
+        
+        // Update Title
+        const titles = {
+            'itinerary': '旅程概覽', 'cz': '布拉格', 'pl': '波蘭', 'fi': '芬蘭', 'check': '清單'
+        };
+        document.querySelector('.nav-title').innerText = titles[pageId];
+        window.scrollTo(0, 0);
+    }
+    
+    // Set default active tab
+    document.querySelector('.tab-item').style.color = '#007AFF';
+
+    // Real-Time Weather Logic (Open-Meteo)
     async function fetchWeather() {
         const cities = [
             { id: 'cz', lat: 50.07, lon: 14.43 }, // Prague
@@ -610,7 +582,7 @@
 
         cities.forEach(async (city) => {
             try {
-                // Get 2 days of data to handle midnight crossover
+                // Fetch 2 days of data to handle midnight crossover
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,relative_humidity_2m,weather_code,precipitation&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=2`;
                 const res = await fetch(url);
                 const data = await res.json();
@@ -620,17 +592,19 @@
                 const tempEl = document.getElementById(`wt-${city.id}`);
                 if(tempEl) {
                     tempEl.innerText = `${Math.round(current.temperature_2m)}°`;
+                    document.getElementById(`wh-${city.id}`).innerText = `${current.relative_humidity_2m}%`;
+                    document.getElementById(`wr-${city.id}`).innerText = `${current.precipitation}mm`;
                     document.getElementById(`wc-${city.id}`).innerText = getWeatherDesc(current.weather_code);
                 }
 
-                // 12-Hour Forecast (Robust Logic)
+                // 12-Hour Forecast (Fixing NaN)
                 const hourlyContainer = document.getElementById(`wf-${city.id}`);
                 if(hourlyContainer) {
                     hourlyContainer.innerHTML = '';
                     
-                    // Find current hour index
+                    // Get current hour index from API response time array
                     const now = new Date();
-                    const currentHourStr = now.toISOString().slice(0, 13); // "2026-02-09T22"
+                    const currentHourStr = now.toISOString().slice(0, 13); // Match YYYY-MM-DDTHH
                     
                     // Find start index in the time array
                     let startIndex = data.hourly.time.findIndex(t => t.startsWith(currentHourStr));
