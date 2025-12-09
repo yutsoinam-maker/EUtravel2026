@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>2026 Trip</title>
     <style>
         :root {
-            /* Pro Palette */
+            /* Palette */
             --bg-body: #F0F2F5;
-            --text-primary: #1C1C1E;
+            --text-primary: #000000;
             --text-secondary: #3C3C4399;
-            
-            /* High Contrast Colors */
-            --cz-color: #0044CC;
-            --pl-color: #C8102E;
-            --fi-color: #002255;
+            --divider: #C6C6C8;
             
             /* Flight Gradients */
-            --flight-you: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
-            --flight-chris: linear-gradient(135deg, #8E2DE2, #4A00E0);
+            --flight-you: linear-gradient(135deg, #0052D4, #4364F7);
+            --flight-chris: linear-gradient(135deg, #DA22FF, #9733EE);
+            
+            /* Country Gradients */
+            --grad-cz: linear-gradient(145deg, #003366, #005EB8);
+            --grad-pl: linear-gradient(145deg, #8E0000, #D93025);
+            --grad-fi: linear-gradient(145deg, #001A33, #004080);
             
             --nav-height: 90px;
         }
@@ -29,20 +32,20 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
             background-color: var(--bg-body);
             margin: 0; padding: 0;
-            height: 100vh; width: 100vw; overflow: hidden;
+            height: 100vh; overflow: hidden;
             display: flex; flex-direction: column;
         }
 
-        /* === Navigation Engine === */
+        /* === Navigation === */
         input[type="radio"] { display: none; }
         
         .app-content {
             flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 20px; padding-top: 100px; padding-bottom: 40px;
+            padding: 20px; padding-top: 110px; padding-bottom: 40px;
             background: var(--bg-body);
         }
         
-        .page { display: none; animation: fadeIn 0.25s ease-out; }
+        .page { display: none; animation: fadeIn 0.2s ease-out; }
         
         #tab1:checked ~ .app-content #page-itinerary,
         #tab2:checked ~ .app-content #page-cz,
@@ -56,81 +59,108 @@
         #tab4:checked ~ .tab-bar label[for="tab4"],
         #tab5:checked ~ .tab-bar label[for="tab5"] { color: #007AFF; transform: scale(1.1); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* === Header === */
         .nav-bar {
-            position: absolute; top: 0; left: 0; right: 0; height: 90px;
+            position: absolute; top: 0; left: 0; right: 0; height: 100px;
             background: rgba(245, 245, 247, 0.95); backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0,0,0,0.1); z-index: 100;
             padding: 50px 20px 10px 20px;
-            display: flex; justify-content: space-between; align-items: flex-end;
+            display: flex; flex-direction: column; justify-content: flex-end;
         }
-        .nav-title { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
-        .nav-subtitle { font-size: 12px; font-weight: 700; color: #8E8E93; text-transform: uppercase; margin-bottom: 5px; }
+        .nav-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+        .nav-subtitle { font-size: 13px; font-weight: 600; color: #8E8E93; text-transform: uppercase; margin-bottom: 4px; }
 
-        /* === FLIGHT WIDGETS (New & Big) === */
+        /* === FLIGHT WIDGETS (Updated) === */
         .flight-section { 
             display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 30px; 
-            scrollbar-width: none; 
+            scrollbar-width: none;
         }
         .flight-section::-webkit-scrollbar { display: none; }
         
         .flight-card {
-            min-width: 280px; height: 160px; border-radius: 22px; padding: 20px;
-            color: white; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column; justify-content: space-between;
+            min-width: 260px; border-radius: 20px; padding: 20px; color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column;
         }
         .flight-card.you { background: var(--flight-you); }
         .flight-card.chris { background: var(--flight-chris); }
         
-        .f-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; opacity: 0.8; letter-spacing: 1px; }
-        .f-mid { display: flex; justify-content: space-between; align-items: center; }
-        .f-code { font-size: 32px; font-weight: 800; }
-        .f-icon { font-size: 24px; }
-        .f-bot { border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 10px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; }
+        .f-top { font-size: 12px; font-weight: 700; opacity: 0.8; letter-spacing: 1px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .f-route { font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .f-detail { font-size: 14px; font-weight: 500; opacity: 0.95; }
 
-        /* === Weather Widget (16:9) === */
+        /* === Weather Widget (Fixed NaN) === */
         .weather-card {
-            background: linear-gradient(135deg, #003366, #005EB8); color: white;
-            border-radius: 24px; padding: 24px; margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); aspect-ratio: 16/8;
+            background: #fff; border-radius: 24px; padding: 24px; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); color: white;
             display: flex; flex-direction: column; justify-content: space-between;
         }
-        .w-pl { background: linear-gradient(135deg, #8E0000, #D93025); }
-        .w-fi { background: linear-gradient(135deg, #001A33, #004080); }
-        
-        .w-top { display: flex; justify-content: space-between; }
-        .w-city { font-size: 26px; font-weight: 700; }
-        .w-eng { font-size: 13px; opacity: 0.8; text-transform: uppercase; font-weight: 700; }
-        .w-mid { font-size: 50px; font-weight: 300; line-height: 1; margin: 10px 0; }
-        .w-bot { display: flex; gap: 20px; font-size: 13px; font-weight: 600; opacity: 0.9; }
+        .weather-card.cz { background: var(--grad-cz); }
+        .weather-card.pl { background: var(--grad-pl); }
+        .weather-card.fi { background: var(--grad-fi); }
 
-        /* === Timeline Cards === */
-        .section-header { font-size: 20px; font-weight: 800; margin: 30px 0 15px 5px; color: #000; }
-        .card { background: #fff; border-radius: 18px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .w-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .w-city { font-size: 26px; font-weight: 700; }
+        .w-eng { font-size: 13px; opacity: 0.8; font-weight: 600; text-transform: uppercase; }
+        .w-temp { font-size: 56px; font-weight: 300; line-height: 1; margin: 15px 0; }
+        .w-cond { font-size: 16px; font-weight: 600; opacity: 0.95; }
+        
+        .w-grid { display: flex; gap: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; }
+        .w-item { font-size: 13px; font-weight: 500; opacity: 0.9; }
+
+        .h-scroll { 
+            display: flex; overflow-x: auto; gap: 20px; margin-top: 15px; padding-bottom: 5px; 
+            scrollbar-width: none; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;
+        }
+        .h-item { display: flex; flex-direction: column; align-items: center; min-width: 50px; }
+        .h-time { font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
+        .h-temp { font-size: 15px; font-weight: 700; }
+
+        /* === Section Header === */
+        .section-header { font-size: 22px; font-weight: 800; margin: 35px 0 15px 5px; color: #000; }
+
+        /* === Timeline Rows === */
+        .card { background: #fff; border-radius: 18px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .row { padding: 20px; border-bottom: 1px solid #E5E5EA; display: flex; align-items: flex-start; }
         .row:last-child { border-bottom: none; }
         
-        .t-left { width: 70px; flex-shrink: 0; }
-        .time { font-size: 15px; font-weight: 700; color: #000; font-feature-settings: "tnum"; }
+        .t-left { width: 75px; flex-shrink: 0; }
+        .time { font-size: 16px; font-weight: 700; color: #000; font-feature-settings: "tnum"; }
         .badge { font-size: 10px; font-weight: 800; color: white; padding: 4px 6px; border-radius: 4px; display: inline-block; margin-top: 5px; text-transform: uppercase; }
-        .bg-cz { background: var(--cz-color); } .bg-pl { background: var(--pl-color); } .bg-fi { background: var(--fi-color); }
+        .bg-cz { background: #0044CC; } .bg-pl { background: #D4213D; } .bg-fi { background: #002255; }
         
         .content { flex: 1; margin-left: 15px; }
         .title { font-size: 17px; font-weight: 700; margin-bottom: 5px; color: #000; }
         .desc { font-size: 15px; color: #555; line-height: 1.5; }
-        .note { margin-top: 8px; font-size: 13px; color: #9A6700; background: #FFF9E6; padding: 6px 10px; border-radius: 6px; display: inline-block; font-weight: 600; }
+        .note { margin-top: 10px; font-size: 13px; color: #856404; background: #FFF9E6; padding: 6px 10px; border-radius: 6px; display: inline-block; font-weight: 600; }
 
         /* === Details === */
         details { border-bottom: 1px solid #E5E5EA; }
-        summary { padding: 20px; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        summary::after { content: '+'; font-size: 22px; color: #C7C7CC; }
+        summary { padding: 22px; font-weight: 700; font-size: 18px; list-style: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        summary::after { content: '+'; font-size: 24px; color: #C7C7CC; }
         details[open] summary::after { content: '-'; color: #007AFF; }
-        .detail-body { padding: 0 20px 30px 20px; background: #FAFAFA; font-size: 16px; line-height: 1.7; color: #333; text-align: justify; }
-        .detail-body p { margin-bottom: 15px; }
+        .detail-body { padding: 0 22px 35px 22px; background: #FAFAFA; font-size: 16px; line-height: 1.8; color: #333; text-align: justify; }
         .warn-box { background: #FFF5F5; border: 1px solid #FFDCDC; color: #D32F2F; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
-        .btn { display: block; width: 100%; text-align: center; padding: 12px; background: #EBF5FF; color: #007AFF; font-weight: 700; text-decoration: none; border-radius: 10px; margin-top: 15px; }
+        .btn { display: block; width: 100%; text-align: center; padding: 14px; background: #EBF5FF; color: #007AFF; font-weight: 700; text-decoration: none; border-radius: 12px; margin-top: 20px; font-size: 16px; }
+
+        /* === Nightlife Card === */
+        .n-item { padding: 22px; border-bottom: 1px solid #E5E5EA; }
+        .n-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .n-name { font-size: 18px; font-weight: 800; color: #000; }
+        .n-tag { font-size: 11px; background: #FFF9E6; color: #B7791F; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; font-weight: 800; }
+        .n-desc { font-size: 15px; color: #555; line-height: 1.5; margin-bottom: 12px; }
+        .n-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #888; }
+        .n-link { color: #007AFF; text-decoration: none; }
+
+        /* === Finland Visual Timeline === */
+        .fi-box { padding: 30px 25px; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .fi-step { padding-left: 35px; border-left: 3px solid #E5E5EA; padding-bottom: 40px; position: relative; }
+        .fi-step:last-child { border: none; padding-bottom: 0; }
+        .fi-dot { position: absolute; left: -11px; top: 0; width: 22px; height: 22px; border-radius: 50%; background: #002255; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .fi-t { font-weight: 800; font-size: 18px; margin-bottom: 6px; color: #000; }
+        .fi-d { font-size: 16px; color: #555; margin-bottom: 12px; line-height: 1.7; }
+        .fi-pill { font-size: 12px; color: #0044CC; background: #F0F7FF; padding: 5px 10px; border-radius: 6px; font-weight: 600; border: 1px solid #E1F0FF; display: inline-block; }
 
         /* === Tab Bar === */
         .tab-bar {
@@ -140,20 +170,11 @@
         }
         .tab-item { display: flex; flex-direction: column; align-items: center; width: 20%; color: #999; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .icon { font-size: 26px; margin-bottom: 4px; }
-
+        
         /* Checklist */
-        .check-row { padding: 20px 24px; border-bottom: 1px solid #E5E5EA; display: flex; justify-content: space-between; align-items: center; }
-        .check-label { font-size: 17px; font-weight: 600; }
-        input[type="checkbox"] { width: 24px; height: 24px; accent-color: #34C759; }
-
-        /* Finland Timeline */
-        .fi-timeline { padding: 25px 20px; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .fi-step { padding-left: 30px; padding-bottom: 35px; border-left: 3px solid #E5E5EA; margin-left: 8px; position: relative; }
-        .fi-step:last-child { border: none; padding-bottom: 0; }
-        .fi-dot { position: absolute; left: -11px; top: 0; width: 20px; height: 20px; background: #002F6C; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .fi-t { font-weight: 800; font-size: 18px; margin-bottom: 6px; }
-        .fi-d { font-size: 15px; color: #555; margin-bottom: 10px; }
-        .fi-tr { font-size: 12px; color: #0044CC; background: #F0F7FF; padding: 5px 10px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        .chk-row { padding: 20px 24px; border-bottom: 1px solid #E5E5EA; display: flex; justify-content: space-between; align-items: center; }
+        .chk-label { font-size: 17px; font-weight: 600; }
+        input[type="checkbox"] { width: 26px; height: 26px; accent-color: #34C759; }
 
     </style>
 </head>
@@ -177,26 +198,18 @@
         <div class="flight-section">
             <div class="flight-card you">
                 <div class="f-top"><div>YOU (HKG)</div><div>FEB 02</div></div>
-                <div class="f-mid">
-                    <span class="f-code">HEL</span>
-                    <span class="f-icon">✈️</span>
-                    <span class="f-code">PRG</span>
-                </div>
+                <div class="f-route">HEL ✈️ PRG</div>
                 <div class="f-bot">
-                    <div>Finnair AY100</div>
-                    <div>17:35 → 18:50 (T2)</div>
+                    <div class="f-detail">Finnair AY100</div>
+                    <div class="f-detail">17:35 → 18:50 (T2)</div>
                 </div>
             </div>
             <div class="flight-card chris">
                 <div class="f-top"><div>CHRIS (UK)</div><div>FEB 02</div></div>
-                <div class="f-mid">
-                    <span class="f-code">LON</span>
-                    <span class="f-icon">✈️</span>
-                    <span class="f-code">PRG</span>
-                </div>
+                <div class="f-route">LON ✈️ PRG</div>
                 <div class="f-bot">
-                    <div>EasyJet</div>
-                    <div>20:35 (T1)</div>
+                    <div class="f-detail">EasyJet</div>
+                    <div class="f-detail">20:35 (T1)</div>
                 </div>
             </div>
         </div>
@@ -209,7 +222,7 @@
             </div>
             <div class="row">
                 <div class="t-left"><div class="time">17:35</div><div class="badge bg-fi">Air</div></div>
-                <div class="content"><div class="title">飛往布拉格 (AY100)</div><div class="desc">Finnair，預計 18:50 抵達 T2。</div></div>
+                <div class="content"><div class="title">飛往布拉格 (AY100)</div><div class="desc">芬蘭航空 Finnair。</div></div>
             </div>
             <div class="row">
                 <div class="t-left"><div class="time">20:35</div><div class="badge bg-cz">PRG</div></div>
@@ -227,10 +240,6 @@
                 <div class="t-left"><div class="time">下午</div><div class="badge bg-cz">PRG</div></div>
                 <div class="content"><div class="title">查理大橋</div><div class="desc">漫步拍照，建議摸「聖約翰」銅像底座許願。</div></div>
             </div>
-            <div class="row">
-                <div class="t-left"><div class="time">晚上</div><div class="badge bg-cz">PRG</div></div>
-                <div class="content"><div class="title">寄存行李</div><div class="desc">收拾大喼，寄存於酒店，準備輕裝去波蘭。</div></div>
-            </div>
         </div>
 
         <div class="section-header">Day 3 • 2月4日 (三)</div>
@@ -245,7 +254,7 @@
             </div>
             <div class="row">
                 <div class="t-left"><div class="time">晚上</div><div class="badge bg-pl">KRK</div></div>
-                <div class="content"><div class="title">抵達 Check-in</div><div class="desc">晚餐食 Pierogi (波蘭餃子)。</div></div>
+                <div class="content"><div class="title">抵達克拉科夫</div><div class="desc">Check-in 後享用波蘭餃子 (Pierogi)。</div></div>
             </div>
         </div>
 
@@ -261,7 +270,7 @@
         <div class="card">
             <div class="row">
                 <div class="t-left"><div class="time">上午</div><div class="badge bg-pl">KRK</div></div>
-                <div class="content"><div class="title">維利奇卡鹽礦</div><div class="desc">室內恆溫 14 度，避寒首選。</div></div>
+                <div class="content"><div class="title">維利奇卡鹽礦</div><div class="desc">室內恆溫，避寒首選。</div></div>
             </div>
             <div class="row">
                 <div class="t-left"><div class="time">下午</div><div class="badge bg-pl">KRK</div></div>
@@ -328,52 +337,54 @@
                 <div><div class="w-city">布拉格</div><div class="w-eng">PRAGUE</div></div>
                 <div class="w-cond" id="wc-cz">Loading...</div>
             </div>
-            <div class="w-main"><div class="w-temp" id="wt-cz">--°</div></div>
-            <div class="w-bot">
-                <div>💧 <span id="wh-cz">--%</span></div>
-                <div>☔ <span id="wr-cz">--mm</span></div>
-            </div>
+            <div class="w-temp" id="wt-cz">--°</div>
+            <div class="h-scroll" id="wf-cz"></div>
         </div>
 
         <div class="section-header">必去景點</div>
         <div class="card">
             <details>
-                <summary>布拉格城堡 (Prague Castle)</summary>
+                <summary>布拉格城堡</summary>
                 <div class="detail-body">
                     <div class="warn-box">⚠️ 入場需安檢，勿帶大包。</div>
                     <p><strong>【千年權力象徵】</strong>這不只是一座城堡，而是被金氏世界紀錄認證為「世界上最大的古堡建築群」，佔地超過 7 萬平方米。自 9 世紀以來，這裡一直是捷克國王、神聖羅馬帝國皇帝以及現在捷克總統的官邸，象徵著國家的最高權力。站在城堡的觀景台，你可以俯瞰整個布拉格的紅屋頂，景色絕美。</p>
                     <p><strong>【必看：聖維特大教堂】</strong>城堡內最顯眼的黑色哥德式尖塔就是 St. Vitus Cathedral。這座教堂花了近 600 年才完工！走進去，一定要尋找左側第三扇彩繪玻璃窗，那是捷克國寶級畫家<strong>慕夏 (Alphonse Mucha)</strong> 的作品，色彩鮮豔且充滿流動感，描繪了斯拉夫民族的歷史，與傳統鑲嵌玻璃截然不同。</p>
+                    <p><strong>【必看：黃金巷】</strong>這是一條充滿色彩繽紛小屋的窄巷。傳說以前住著為國王煉金的術士，試圖煉製長生不老藥。著名的 22 號藍色小屋曾是大文豪<strong>卡夫卡</strong>的居所，他在這裡完成了許多作品。現在這些小屋變成了精緻的紀念品店，可以買到特色的書籤和錫製玩具。</p>
                     <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Prague+Castle" class="btn">📍 Google Map</a>
                 </div>
             </details>
+
             <details>
-                <summary>查理大橋 (Charles Bridge)</summary>
+                <summary>查理大橋</summary>
                 <div class="detail-body">
                     <div class="warn-box">⚠️ 扒手黑點，小心財物。</div>
                     <p><strong>【露天的巴洛克博物館】</strong>這座橫跨伏爾塔瓦河的石橋建於 1357 年 7 月 9 日 5 點 31 分（1-3-5-7-9-7-5-3-1）。這是一個由查理四世親自選定的吉時，是一個迴文數字。民間傳說為了讓橋樑更加堅固，建築師在石灰砂漿中混入了<strong>成千上萬顆雞蛋</strong>。</p>
+                    <p><strong>【觸摸好運】</strong>橋上有 30 座巴洛克風格的聖人雕像。其中最有名的是<strong>「聖約翰·內波穆克」</strong>（頭上有五顆星的那位）。傳說他因為拒絕向國王透露皇后的告解內容，被憤怒的國王從這座橋上丟進河裡淹死。現在遊客都會去摸他底座的銅浮雕（已被摸得金光閃閃），據說會帶來好運，或者保佑你將來重回布拉格。建議清晨 8 點前來，避開擁擠人潮。</p>
                     <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Charles+Bridge" class="btn">📍 Google Map</a>
                 </div>
             </details>
-            <details><summary>國家博物館</summary><div class="detail-body"><p>瓦茨拉夫廣場盡頭的宏偉建築。內部金碧輝煌，尤其是中央大廳的大理石樓梯，絕對是打卡熱點。館內收藏了大量捷克歷史文物、礦石和自然標本。如果外面太冷，進來行半日非常舒服，暖氣充足。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=National+Museum+Prague" class="btn">📍 Map</a></div></details>
-            <details><summary>跳舞的房子</summary><div class="detail-body"><p>由建築師 Frank Gehry 設計，外型像一對在跳舞的男女。這棟現代建築在古典的布拉格中非常突出。頂樓有 Glass Bar 可以看河景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Dancing+House" class="btn">📍 Map</a></div></details>
-            <details><summary>列儂牆</summary><div class="detail-body"><p>充滿塗鴉的牆壁。在 80 年代，捷克青年開始在上面塗鴉披頭四歌詞，表達對共產政權的不滿。現在是文青打卡聖地。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Lennon+Wall" class="btn">📍 Map</a></div></details>
-            <details><summary>斯特拉霍夫圖書館</summary><div class="detail-body"><p>擁有極其華麗的巴洛克式天花板壁畫和古老的書架。分為「神學大廳」和「哲學大廳」，美得像哈利波特場景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Strahov+Library" class="btn">📍 Map</a></div></details>
+
+            <details><summary>國家博物館</summary><div class="detail-body"><p><strong>【避寒首選】</strong>瓦茨拉夫廣場盡頭的宏偉建築。內部金碧輝煌，尤其是中央大廳的大理石樓梯，絕對是打卡熱點。館內收藏了大量捷克歷史文物、礦石和自然標本（包括巨大的鯨魚骨架）。博物館見證了捷克許多重要歷史時刻，包括布拉格之春期間，蘇聯坦克曾在建築外牆留下彈孔。現在修復後已煥然一新，是了解捷克歷史的最佳地點。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=National+Museum+Prague" class="btn">📍 Google Map</a></div></details>
+            <details><summary>跳舞的房子</summary><div class="detail-body"><p><strong>【解構主義傑作】</strong>由建築師 Frank Gehry 設計，外型像一對在跳舞的男女（Ginger & Fred）。這棟現代建築在古典的布拉格中非常突出。頂樓有 Glass Bar 可以看河景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Dancing+House" class="btn">📍 Google Map</a></div></details>
+            <details><summary>列儂牆</summary><div class="detail-body"><p><strong>【愛與和平的象徵】</strong>這原本只是一面普通的牆，但在 80 年代，捷克青年開始在上面塗鴉披頭四歌詞，表達對共產政權的不滿。現在是文青打卡聖地。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Lennon+Wall" class="btn">📍 Google Map</a></div></details>
+            <details><summary>斯特拉霍夫圖書館</summary><div class="detail-body"><p><strong>【世界最美圖書館】</strong>擁有極其華麗的巴洛克式天花板壁畫和古老的書架。分為「神學大廳」和「哲學大廳」，美得像哈利波特場景。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Strahov+Library" class="btn">📍 Google Map</a></div></details>
         </div>
 
         <div class="section-header">入黑好去處</div>
         <div class="card">
-            <div class="row"><div class="content"><div class="title">Reduta Jazz Club 🎷</div><div class="desc">最古老爵士俱樂部，前美國總統曾在此演出。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Reduta+Jazz+Club" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 19:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Jazz Dock 🚢</div><div class="desc">河邊玻璃屋爵士吧，景色極佳。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Jazz+Dock+Prague" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 17:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Hemingway Bar 🍸</div><div class="desc">排名第一的酒吧，主打 Absinthe，需預約。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Hemingway+Bar+Prague" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 17:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Billiard Club Harlequin 🎱</div><div class="desc">大型桌球會，環境寬敞。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Billiard+Club+Harlequin+Prague" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 14:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Karlovy Lazne 💃</div><div class="desc">中歐最大夜店，5 層樓高！</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Karlovy+Lazne" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 21:00開</a></div></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Reduta Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">布拉格最古老爵士俱樂部，前美國總統克林頓曾在此演出。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Reduta+Jazz+Club" class="n-link">📍 地圖 • 19:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Jazz Dock</div><div class="n-tag">Modern</div></div><div class="n-desc">河邊玻璃屋爵士吧，景色極佳，非常 Chill。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Jazz+Dock+Prague" class="n-link">📍 地圖 • 17:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Hemingway Bar</div><div class="n-tag">Cocktail</div></div><div class="n-desc">排名第一的酒吧，主打 Absinthe，需預約。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Hemingway+Bar+Prague" class="n-link">📍 地圖 • 17:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Billiard Club Harlequin</div><div class="n-tag">Pool</div></div><div class="n-desc">大型桌球會，環境寬敞。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Billiard+Club+Harlequin+Prague" class="n-link">📍 地圖 • 14:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Karlovy Lazne</div><div class="n-tag">Club</div></div><div class="n-desc">中歐最大夜店，5 層樓高！</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Karlovy+Lazne" class="n-link">📍 地圖 • 21:00開</a></div>
         </div>
     </div>
 
     <div id="page-pl" class="page">
         <div class="weather weather-card pl">
-            <div class="w-top"><div><div class="w-city">克拉科夫</div><div>KRAKOW</div></div><div class="w-desc" id="wc-pl">Loading...</div></div>
+            <div class="w-top"><div><div class="w-city">克拉科夫</div><div class="w-eng">KRAKOW</div></div><div class="w-cond" id="wc-pl">Loading...</div></div>
             <div class="w-main"><div class="w-temp" id="wt-pl">--°</div></div>
+            <div class="hourly-scroll" id="wf-pl"></div>
         </div>
 
         <div class="section-header">🇵🇱 必去景點</div>
@@ -382,7 +393,8 @@
                 <summary>奧斯威辛集中營</summary>
                 <div class="detail-body">
                     <div class="warn-box">⚠️ 必須預約。不可帶大包。</div>
-                    <p><strong>【沈重歷史】</strong>二戰納粹最大的滅絕營。參觀分為一號營（紅磚房）和二號營（Birkenau）。冬天去風非常大，刺骨的寒冷會讓你切身感受到當年囚犯在單薄條紋衣下的絕望。</p>
+                    <p><strong>【沈重的歷史】</strong>這裡不是一個旅遊景點，而是一個讓人戰慄的歷史見證地。二戰期間，納粹德國在這裡殺害了超過 110 萬人，其中絕大多數是猶太人。這是一生必去一次的地方，提醒我們和平的珍貴。</p>
+                    <p>參觀分為兩部分：<strong>一號營 (Auschwitz I)</strong> 由原本的紅磚軍營改建，展示了受害者的頭髮、鞋子和毒氣罐；<strong>二號營 (Birkenau)</strong> 是後期擴建的滅絕營，非常廣闊空曠。冬天去風非常大，那種刺骨的寒冷會讓你切身感受到當年囚犯在單薄條紋衣下的絕望。</p>
                     <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Auschwitz" class="btn">📍 Google Map</a>
                 </div>
             </details>
@@ -390,135 +402,69 @@
                 <summary>維利奇卡鹽礦</summary>
                 <div class="detail-body">
                     <div class="warn-box">⚠️ 需走 800 級樓梯。</div>
-                    <p><strong>【地下宮殿】</strong>深達 327 米。最震撼的是「聖金加禮拜堂」，這座巨大的地下教堂連同祭壇、吊燈，全部都是礦工們用「鹽岩」雕刻出來的！</p>
+                    <p><strong>【地下宮殿】</strong>這是一個深達 327 米、長度超過 300 公里的地下迷宮，自 13 世紀就開始開採。最神奇的是，這裡不僅僅是礦坑，而是一座地下城市。</p>
+                    <p>最震撼的景點是<strong>「聖金加禮拜堂 (Chapel of St. Kinga)」</strong>。這座巨大的地下教堂位於地下 101 米，連同裡面的祭壇、聖經浮雕、地板，甚至天花板上華麗的<strong>大型水晶吊燈</strong>，全部都是礦工們用「鹽岩」一點一點雕刻出來的！這裡充滿鹽分的空氣對呼吸道非常有益。</p>
                     <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wieliczka+Salt+Mine" class="btn">📍 Google Map</a>
                 </div>
             </details>
             <details><summary>瓦維爾城堡</summary><div class="detail-body"><p>波蘭皇室居所。必看河邊會噴火的「瓦維爾龍」雕像。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wawel+Castle" class="btn">📍 Map</a></div></details>
             <details><summary>辛德勒工廠</summary><div class="detail-body"><p>電影《舒特拉的名單》原址，現在是二戰博物館。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Oskar+Schindler+Enamel+Factory" class="btn">📍 Map</a></div></details>
-            <details><summary>尋找小矮人 (Wroclaw)</summary><div class="detail-body"><p>全城 600 多隻小矮人銅像。銀行門口有「取錢小矮人」，監獄門口有「囚犯小矮人」。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wroclaw+Gnomes" class="btn">📍 Map</a></div></details>
+            <details><summary>尋找小矮人 (Wroclaw)</summary><div class="detail-body"><p>全城 600 多隻小矮人銅像，源於反共產運動。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Wroclaw+Gnomes" class="btn">📍 Map</a></div></details>
             <details><summary>拉茨瓦維采全景畫</summary><div class="detail-body"><p>360 度巨型油畫，配合真實道具，視覺效果像 VR。</p><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Racławice+Panorama" class="btn">📍 Map</a></div></details>
         </div>
 
         <div class="section-header">入黑好去處</div>
         <div class="card">
-            <div class="row"><div class="content"><div class="title">Harris Piano Jazz Bar 🎹</div><div class="desc">Krakow 著名爵士吧，磚牆地窖風格。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Harris+Piano+Jazz+Bar" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 18:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Alchemia 🕯️</div><div class="desc">猶太區傳奇酒吧，煉金術實驗室風。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Alchemia+Krakow" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 09:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">橋底酒吧街 🚂</div><div class="desc">Wroclaw 必去！火車經過會隆隆聲。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bogusławskiego+Wrocław" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 16:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Bandaclub 🎱</div><div class="desc">Sky Tower 內的高檔桌球會。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bandaclub+Wrocław" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 10:00開</a></div></div>
-            <div class="row"><div class="content"><div class="title">Vertigo Jazz Club 🎷</div><div class="desc">Wroclaw 最好的爵士樂場地。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Vertigo+Jazz+Club" class="btn" style="margin-top:10px; padding:8px;">📍 地圖 • 18:00開</a></div></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Harris Piano Jazz Bar</div><div class="n-tag">Jazz</div></div><div class="n-desc">Krakow 著名爵士吧，磚牆地窖風格。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Harris+Piano+Jazz+Bar" class="n-link">📍 地圖 • 18:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Alchemia</div><div class="n-tag">Pub</div></div><div class="n-desc">猶太區傳奇酒吧，煉金術實驗室風。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Alchemia+Krakow" class="n-link">📍 地圖 • 09:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">橋底酒吧街 (Wroclaw)</div><div class="n-tag">Unique</div></div><div class="n-desc">Bogusławskiego 街，火車經過會隆隆聲。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bogusławskiego+Wrocław" class="n-link">📍 地圖 • 16:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Bandaclub (Wroclaw)</div><div class="n-tag">Pool</div></div><div class="n-desc">Sky Tower 內的高檔桌球會。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Bandaclub+Wrocław" class="n-link">📍 地圖 • 10:00開</a></div>
+            <div class="n-item"><div class="n-head"><div class="n-name">Vertigo Jazz Club</div><div class="n-tag">Jazz</div></div><div class="n-desc">Wroclaw 最好的爵士樂場地。</div><a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Vertigo+Jazz+Club" class="n-link">📍 地圖 • 18:00開</a></div>
+        </div>
+
+        <div class="weather w-pl" style="margin-top:40px;">
+            <div class="w-top"><div><div class="w-city">弗羅茨瓦夫</div><div>WROCLAW</div></div><div class="w-desc" id="wc-wro">Loading...</div></div>
+            <div class="w-main"><div class="w-temp" id="wt-wro">--°</div></div>
+            <div class="hourly-scroll" id="wf-wro"></div>
         </div>
     </div>
 
     <div id="page-fi" class="page">
-        <div class="weather weather-card fi">
+        <div class="weather w-fi">
             <div class="w-top"><div><div class="w-city">赫爾辛基</div><div>HELSINKI</div></div><div class="w-desc" id="wc-fi">Loading...</div></div>
             <div class="w-main"><div class="w-temp" id="wt-fi">--°</div></div>
+            <div class="hourly-scroll" id="wf-fi"></div>
         </div>
 
         <div class="card" style="background:#E1F5FE; border:1px solid #B3E5FC; padding:20px;">
-            <div style="font-weight:700; color:#004080; font-size:18px;">🎫 HSL Day Ticket (€11)</div>
-            <p style="font-size:15px; color:#333; margin-top:10px;">機場售票機買 <strong>ABC Zone</strong>。<br>包：機場火車(P/I) + 電車 + 芬蘭堡渡輪。</p>
+            <div style="font-weight:700; color:#004080; font-size:18px;">🎫 交通全攻略</div>
+            <p style="font-size:15px; color:#333; margin-top:10px;">機場售票機買 <strong>ABC Zone Day Ticket (€11)</strong>。<br>包：機場火車(P/I) + 電車 + 芬蘭堡渡輪。</p>
         </div>
 
         <div class="section-header">A. 經典歷史線 (垂直時間軸)</div>
-        <div class="fi-timeline">
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 赫爾辛基座堂</div><div class="fi-trans">🚋 電車 2,4,7</div><div class="fi-d">白教堂，地標中的地標。純白色的新古典主義建築，站在高台上俯瞰參議院廣場，非常有氣勢。</div></div>
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 烏斯佩斯基大教堂</div><div class="fi-trans">🚶 步行 5 分鐘</div><div class="fi-d">紅磚綠頂金洋蔥頭，俄羅斯東正教風格。內部裝飾金碧輝煌。</div></div>
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. 集市廣場</div><div class="fi-d">碼頭邊的露天市集，有賣小食。</div></div>
+        <div class="card fi-box">
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 赫爾辛基座堂</div><div class="fi-tr">🚋 電車 2,4,7</div><div class="fi-d">白教堂，地標中的地標，建於沙皇統治時期。純白色的新古典主義建築，站在高台上俯瞰參議院廣場，非常有氣勢。</div></div>
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 烏斯佩斯基大教堂</div><div class="fi-tr">🚶 步行 5 分鐘</div><div class="fi-d">紅磚綠頂金洋蔥頭，俄羅斯東正教風格。內部裝飾金碧輝煌，見證了芬蘭曾是俄國一部分的歷史。</div></div>
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. 集市廣場</div><div class="fi-d">碼頭邊的露天市集，有賣小食和紀念品。</div></div>
             <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Senate+Square+Helsinki" class="btn">📍 路線地圖</a>
         </div>
 
         <div class="section-header">B. 舒適避寒線</div>
-        <div class="fi-timeline">
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. Oodi 中央圖書館</div><div class="fi-trans">🚶 火車旁</div><div class="fi-d">芬蘭人的客廳。暖氣超足，有 Cafe，可躺著看雪景。</div></div>
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 岩石教堂</div><div class="fi-trans">🚋 電車 1,2</div><div class="fi-d">炸開岩石蓋的教堂，恆溫保暖。</div></div>
+        <div class="card fi-box">
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. Oodi 中央圖書館</div><div class="fi-tr">🚶 火車旁</div><div class="fi-d">芬蘭人的客廳。暖氣超足，有 Cafe，可躺著看雪景。</div></div>
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. 岩石教堂</div><div class="fi-tr">🚋 電車 1,2</div><div class="fi-d">炸開岩石蓋的教堂，恆溫保暖。</div></div>
             <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. 老農貿市場</div><div class="fi-d">室內紅磚街市，必飲熱三文魚湯。</div></div>
-            <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Oodi+Helsinki" class="btn">📍 路線地圖</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=Oodi+Helsinki" class="btn">📍 路線地圖</a>
         </div>
 
         <div class="section-header">C. 海島軍事線</div>
-        <div class="fi-timeline">
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">芬蘭堡 (Suomenlinna)</div><div class="fi-trans">⛴️ 集市廣場搭 Ferry</div><div class="fi-d">海上要塞，有古炮台和潛艇。海風極大但景色壯觀。船費包在 ABC 車票內。</div></div>
-            <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Suomenlinna" class="btn">📍 路線地圖</a>
+        <div class="card fi-box">
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">芬蘭堡 (Suomenlinna)</div><div class="fi-tr">⛴️ 集市廣場搭 Ferry</div><div class="fi-d">海上要塞，有古炮台和潛艇。海風極大但景色壯觀。船費包在 ABC 車票內。</div></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=Suomenlinna" class="btn">📍 路線地圖</a>
         </div>
 
         <div class="section-header">D. 設計文青線</div>
-        <div class="fi-timeline">
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 靜默禮拜堂</div><div class="fi-trans">🚶 Kamppi</div><div class="fi-d">鬧市中像木桶的建築，裡面極度安靜。</div></div>
+        <div class="card fi-box">
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">1. 靜默禮拜堂</div><div class="fi-tr">🚶 Kamppi</div><div class="fi-d">鬧市中像木桶的建築，裡面極度安靜。</div></div>
             <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">2. Amos Rex 美術館</div><div class="fi-d">地面是奇怪的凸起窗口，打卡一流。</div></div>
-            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. Fazer Cafe</div><div class="fi-d">芬蘭國寶級朱古力店，飲熱朱古力。</div></div>
-            <a href="http://googleusercontent.com/maps.google.com/search?api=1&query=Kamppi+Chapel" class="btn">📍 路線地圖</a>
-        </div>
-    </div>
-
-    <div id="page-check" class="page">
-        <div class="section-header">行李清單</div>
-        <div class="card">
-            <div class="row"><div class="content" style="color:var(--cz-color); font-weight:800;">你 (HKG)</div></div>
-            <div class="check-row"><div class="check-label">護照 (1本)</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">歐洲 SIM 卡</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">轉插 (兩腳圓頭 Type E/F)</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">暖貼 (大量)</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">牙刷牙膏、拖鞋</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">Superdry (隨身)</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">端莊衫 (歌劇)</div><input type="checkbox"></div>
-        </div>
-        <div class="card">
-            <div class="row"><div class="content" style="color:var(--fi-color); font-weight:800;">朋友 (UK)</div></div>
-            <div class="check-row"><div class="check-label"><strong>BRP / Visa Proof</strong></div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">香港護照</div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label"><strong>轉插 (UK to EU)</strong></div><input type="checkbox"></div>
-            <div class="check-row"><div class="check-label">GHIC / EHIC 卡</div><input type="checkbox"></div>
-        </div>
-    </div>
-</div>
-
-<div class="tab-bar">
-    <label for="tab1" class="tab-item"><div class="icon">📅</div>行程</label>
-    <label for="tab2" class="tab-item"><div class="icon">🇨🇿</div>捷克</label>
-    <label for="tab3" class="tab-item"><div class="icon">🇵🇱</div>波蘭</label>
-    <label for="tab4" class="tab-item"><div class="icon">🇫🇮</div>芬蘭</label>
-    <label for="tab5" class="tab-item"><div class="icon">✅</div>清單</label>
-</div>
-
-<script>
-    async function fetchWeather() {
-        const cities = [
-            { id: 'cz', lat: 50.07, lon: 14.43 }, // Prague
-            { id: 'pl', lat: 50.06, lon: 19.94 }, // Krakow
-            { id: 'fi', lat: 60.16, lon: 24.93 }  // Helsinki
-        ];
-
-        cities.forEach(async (city) => {
-            try {
-                // Fetch 2 days of data to handle midnight
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,weathercode&timezone=auto&forecast_days=2`;
-                const res = await fetch(url);
-                const data = await res.json();
-
-                const temp = Math.round(data.current_weather.temperature);
-                const code = data.current_weather.weathercode;
-                
-                document.getElementById(`wt-${city.id}`).innerText = `${temp}°`;
-                document.getElementById(`wc-${city.id}`).innerText = getWeatherDesc(code);
-            } catch (e) { 
-                console.log('Weather Error', e); 
-            }
-        });
-    }
-
-    function getWeatherDesc(code) {
-        if (code === 0) return "天晴";
-        if (code <= 3) return "多雲";
-        if (code <= 48) return "有霧";
-        if (code <= 67) return "有雨";
-        if (code <= 77) return "有雪";
-        return "多雲";
-    }
-
-    fetchWeather();
-</script>
-
-</body>
-</html>
+            <div class="fi-step"><div class="fi-dot"></div><div class="fi-t">3. Fazer Cafe</div><div class="fi-d">芬蘭國寶級朱古力店，飲熱朱古
